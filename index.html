@@ -55,7 +55,13 @@
         position: absolute;
     }
 
-    .shop {
+    .shop {<div class="upgrade">
+    <h2>🤖 Auto Clicker</h2>
+    <p>Cost: 100 cookies</p>
+    <p>Automatically clicks the cookie 10 times/sec</p>
+    <button onclick="buyAutoClicker()">Buy Auto Clicker</button>
+    <p>Owned: <span id="autoClickers">0</span></p>
+</div>
         width: 500px;
         margin: 40px auto;
     }
@@ -267,6 +273,147 @@ function buyFactory() {
 setInterval(() => {
     cookies += cps / 10;
     updateDisplay();
+}, 100);
+
+/* =========================
+   AUTO SAVE EVERY 5 SECONDS
+========================= */
+setInterval(() => {
+    saveGame();
+    console.log("Game Saved!");
+}, 5000);
+
+/* =========================
+   SAVE WHEN TAB CLOSES
+========================= */
+window.addEventListener("beforeunload", saveGame);
+
+/* =========================
+   START GAME
+========================= */
+loadGame();
+updateDisplay();
+</script><script>
+let cookies = 0;
+let cps = 0;
+
+let grandmas = 0;
+let factories = 0;
+let autoClickers = 0;
+
+/* =========================
+   LOAD SAVE DATA
+========================= */
+function loadGame() {
+    const save = JSON.parse(localStorage.getItem("cookieSave"));
+
+    if (save) {
+        cookies = save.cookies || 0;
+        cps = save.cps || 0;
+        grandmas = save.grandmas || 0;
+        factories = save.factories || 0;
+        autoClickers = save.autoClickers || 0;
+    }
+}
+
+/* =========================
+   SAVE GAME
+========================= */
+function saveGame() {
+    const saveData = {
+        cookies,
+        cps,
+        grandmas,
+        factories,
+        autoClickers
+    };
+
+    localStorage.setItem("cookieSave", JSON.stringify(saveData));
+}
+
+/* =========================
+   UPDATE DISPLAY
+========================= */
+function updateDisplay() {
+    document.getElementById("cookies").innerText =
+        "Cookies: " + Math.floor(cookies).toLocaleString();
+
+    document.getElementById("cps").innerText =
+        cps.toLocaleString() + " cookies per second";
+
+    document.getElementById("grandmas").innerText = grandmas;
+    document.getElementById("factories").innerText = factories;
+    document.getElementById("autoClickers").innerText = autoClickers;
+}
+
+/* =========================
+   COOKIE CLICK
+========================= */
+document.getElementById("cookie").addEventListener("click", () => {
+    cookies += 1;
+    updateDisplay();
+});
+
+/* =========================
+   BUY GRANDMA
+========================= */
+function buyGrandma() {
+    if (cookies >= 50) {
+        cookies -= 50;
+        grandmas++;
+        cps += 5;
+
+        updateDisplay();
+        saveGame();
+    } else {
+        alert("Not enough cookies!");
+    }
+}
+
+/* =========================
+   BUY FACTORY
+========================= */
+function buyFactory() {
+    if (cookies >= 500) {
+        cookies -= 500;
+        factories++;
+        cps += 100000000000000;
+
+        updateDisplay();
+        saveGame();
+    } else {
+        alert("You need 500 cookies!");
+    }
+}
+
+/* =========================
+   BUY AUTO CLICKER
+========================= */
+function buyAutoClicker() {
+    if (cookies >= 100) {
+        cookies -= 100;
+        autoClickers++;
+
+        updateDisplay();
+        saveGame();
+    } else {
+        alert("You need 100 cookies!");
+    }
+}
+
+/* =========================
+   GAME LOOP
+========================= */
+setInterval(() => {
+
+    // Passive income
+    cookies += cps / 10;
+
+    // Auto clickers
+    cookies += autoClickers;
+
+    updateDisplay();
+
 }, 100);
 
 /* =========================
