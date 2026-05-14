@@ -172,3 +172,119 @@ updateDisplay();
 
 </body>
 </html>
+<script>
+let cookies = 0;
+let cps = 0;
+
+let grandmas = 0;
+let factories = 0;
+
+/* =========================
+   LOAD SAVE DATA
+========================= */
+function loadGame() {
+    const save = JSON.parse(localStorage.getItem("cookieSave"));
+
+    if (save) {
+        cookies = save.cookies || 0;
+        cps = save.cps || 0;
+        grandmas = save.grandmas || 0;
+        factories = save.factories || 0;
+    }
+}
+
+/* =========================
+   SAVE GAME
+========================= */
+function saveGame() {
+    const saveData = {
+        cookies,
+        cps,
+        grandmas,
+        factories
+    };
+
+    localStorage.setItem("cookieSave", JSON.stringify(saveData));
+}
+
+/* =========================
+   UPDATE DISPLAY
+========================= */
+function updateDisplay() {
+    document.getElementById("cookies").innerText =
+        "Cookies: " + Math.floor(cookies).toLocaleString();
+
+    document.getElementById("cps").innerText =
+        cps.toLocaleString() + " cookies per second";
+
+    document.getElementById("grandmas").innerText = grandmas;
+    document.getElementById("factories").innerText = factories;
+}
+
+/* =========================
+   COOKIE CLICK
+========================= */
+document.getElementById("cookie").addEventListener("click", () => {
+    cookies += 1;
+    updateDisplay();
+});
+
+/* =========================
+   BUY GRANDMA
+========================= */
+function buyGrandma() {
+    if (cookies >= 50) {
+        cookies -= 50;
+        grandmas++;
+        cps += 5;
+
+        updateDisplay();
+        saveGame();
+    } else {
+        alert("Not enough cookies!");
+    }
+}
+
+/* =========================
+   BUY FACTORY
+========================= */
+function buyFactory() {
+    if (cookies >= 500) {
+        cookies -= 500;
+        factories++;
+        cps += 100000000000000;
+
+        updateDisplay();
+        saveGame();
+    } else {
+        alert("You need 500 cookies!");
+    }
+}
+
+/* =========================
+   GAME LOOP
+========================= */
+setInterval(() => {
+    cookies += cps / 10;
+    updateDisplay();
+}, 100);
+
+/* =========================
+   AUTO SAVE EVERY 5 SECONDS
+========================= */
+setInterval(() => {
+    saveGame();
+    console.log("Game Saved!");
+}, 5000);
+
+/* =========================
+   SAVE WHEN TAB CLOSES
+========================= */
+window.addEventListener("beforeunload", saveGame);
+
+/* =========================
+   START GAME
+========================= */
+loadGame();
+updateDisplay();
+</script>
